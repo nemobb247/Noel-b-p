@@ -287,16 +287,25 @@
             const canvas = document.createElement('canvas');
             canvas.width = 1024; canvas.height = 256;
             const ctx = canvas.getContext('2d');
-            ctx.font = 'bold italic 90px "Times New Roman"';
-            ctx.fillStyle = '#FFD700'; ctx.textAlign = 'center';
-            ctx.shadowColor = "#FF0000"; ctx.shadowBlur = 40; 
-            ctx.fillText("MERRY CHRISTMAS", 512, 130);
+            ctx.font = 'bold 90px "Dancing Script", cursive';
+            ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center';
+            ctx.shadowColor = "#FF0000"; ctx.shadowBlur = 50; 
+            ctx.fillText("Merry X'mas Bẹpp 🎄✨", 512, 130);
             const tex = new THREE.CanvasTexture(canvas);
             const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, blending: THREE.AdditiveBlending });
             titleMesh = new THREE.Mesh(new THREE.PlaneGeometry(60, 15), mat);
             titleMesh.position.set(0, 50, 0);
             scene.add(titleMesh);
-
+ let time = 0;
+    function pulseText() {
+        requestAnimationFrame(pulseText);
+        time += 0.04;
+        const opacity = 0.6 + Math.sin(time) * 0.4;
+        if (titleMesh && titleMesh.material) {
+            titleMesh.material.opacity = opacity;
+        }
+    }
+    pulseText();
             // STAR Vandiep
             const starCanvas = document.createElement('canvas');
             starCanvas.width = 128; starCanvas.height = 128;
@@ -528,36 +537,9 @@
             if(camera) { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }
         });
     </script>
-<div id="special-text">
-    Merry X'mas Bẹpp 🎄✨
-</div>
 <style>
 /* Nhúng font chữ nghệ thuật từ Google */
 @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
-
-#special-text {
-    position: fixed;
-    bottom: 40px;
-    width: 100%;
-    text-align: center;
-    /* Màu trắng cho dễ đọc */
-    color: #ffffff; 
-    /* Font chữ viết tay nghệ thuật */
-    font-family: 'Dancing Script', cursive; 
-    font-size: 35px;
-    font-weight: bold;
-    z-index: 10000;
-    /* Hiệu ứng tỏa sáng màu đỏ Noel */
-    text-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 30px #ffffff;
-    pointer-events: none;
-    
-    animation: slowBlink 3s ease-in-out infinite;
-}
-
-@keyframes slowBlink {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.6; transform: scale(1.05); } /* Nhấp nháy kèm phóng to nhẹ */
-}
 </style>
 </body>
 </html>
