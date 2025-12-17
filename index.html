@@ -285,12 +285,12 @@
         function createDecorations() {
             // MERRY CHRISTMAS Vandiep
             const canvas = document.createElement('canvas');
-            canvas.width = 1024; canvas.height = 256;
+            canvas.width = 2048; canvas.height = 256;
             const ctx = canvas.getContext('2d');
-            ctx.font = 'bold 90px "Dancing Script", cursive';
+            ctx.font = '90px "Great Vibes", cursive';
             ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center';
             ctx.shadowColor = "#FF0000"; ctx.shadowBlur = 50; 
-            ctx.fillText("Merry X'mas Bẹpp 🎄✨", 512, 130);
+            ctx.fillText("Merry X'mas Bẹpp 🎄✨", 1024, 130);
             const tex = new THREE.CanvasTexture(canvas);
             const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, blending: THREE.AdditiveBlending });
             titleMesh = new THREE.Mesh(new THREE.PlaneGeometry(60, 15), mat);
@@ -326,12 +326,12 @@
 
             // I LOVE YOU TEXT Vandiep
             const loveCanvas = document.createElement('canvas');
-            loveCanvas.width = 1024; loveCanvas.height = 256;
+            loveCanvas.width = 2048; loveCanvas.height = 256;
             const lCtx = loveCanvas.getContext('2d');
-            lCtx.font = 'bold 120px "Segoe UI", sans-serif';
-            lCtx.fillStyle = '#FF69B4'; lCtx.textAlign = 'center';
+            lCtx.font = '120px "Great Vibes", cursive';
+            lCtx.fillStyle = '#ffffff'; lCtx.textAlign = 'center';
             lCtx.shadowColor = "#FF1493"; lCtx.shadowBlur = 40; 
-            lCtx.fillText("IU BÉP ❤️🎄 ", 512, 130);
+            lCtx.fillText("IU BÉP 💖 🎄 ", 1024, 130);
             const loveTex = new THREE.CanvasTexture(loveCanvas);
             const loveMat = new THREE.MeshBasicMaterial({ map: loveTex, transparent: true, blending: THREE.AdditiveBlending });
             loveMesh = new THREE.Mesh(new THREE.PlaneGeometry(70, 18), loveMat);
