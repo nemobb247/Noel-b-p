@@ -19,16 +19,15 @@
             text-align: center; pointer-events: none; z-index: 100;
         }
 
-        /* Nút bấm Open mới */
         button {
             pointer-events: auto; cursor: pointer;
             background: linear-gradient(to bottom, #D32F2F, #8B0000); 
             color: #FFF; border: 2px solid #FFD700;
             padding: 15px 40px; border-radius: 30px; 
-            font-weight: 800; font-size: 20px; /* Chữ to rõ */
+            font-weight: 800; font-size: 20px; 
             box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
             animation: pulse 1.5s infinite;
-            font-family: 'Times New Roman', serif; /* Font sang trọng */
+            font-family: 'Times New Roman', serif;
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
@@ -112,7 +111,7 @@
         let scene, camera, renderer;
         let groupGold, groupRed, groupGift; 
         let photoMeshes = [];    
-        let titleMesh, loveMesh, starMesh; // Thêm loveMesh
+        let titleMesh, loveMesh, starMesh;
         
         let state = 'TREE'; 
         let selectedIndex = 0;
@@ -144,8 +143,10 @@
             const pPositions = [];
             const pExplodeTargets = [];
             const pTreeTargets = [];
+            const pHeartTargets = []; // Tạo mảng chứa vị trí trái tim
             
             for(let i=0; i<count; i++) {
+                // 1. TẠO CÂY THÔNG
                 const h = Math.random() * CONFIG.treeHeight; 
                 const y = h - CONFIG.treeHeight / 2;
                 let radiusRatio = (type === 'gold') ? Math.sqrt(Math.random()) : 0.9 + Math.random()*0.1;
@@ -156,6 +157,7 @@
                 const tz = r * Math.sin(theta);
                 pTreeTargets.push(tx, y, tz);
 
+                // 2. TẠO QUẢ CẦU NỔ (BUNG QUÀ)
                 const u = Math.random();
                 const v = Math.random();
                 const phi = Math.acos(2 * v - 1);
@@ -166,12 +168,38 @@
                 const ey = rad * Math.sin(phi) * Math.sin(lam);
                 const ez = rad * Math.cos(phi);
                 pExplodeTargets.push(ex, ey, ez);
+
+                // 3. TẠO HÌNH TRÁI TIM (HEART)
+                // Công thức toán học trái tim 3D
+                const t = Math.random() * Math.PI * 2;
+                // Hàm trái tim: x = 16sin^3(t), y = 13cos(t) - 5cos(2t)...
+                let hx = 16 * Math.pow(Math.sin(t), 3);
+                let hy = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+                
+                // Scale to cho đẹp
+                const scaleHeart = 2.5; 
+                hx *= scaleHeart;
+                hy *= scaleHeart;
+                
+                // Tạo độ dày cho trái tim (3D)
+                const hz = (Math.random() - 0.5) * 15; 
+                
+                // Đẩy vị trí lên cao một chút cho cân đối
+                pHeartTargets.push(hx, hy + 10, hz);
+
+                // Khởi tạo vị trí ban đầu là cây thông
                 pPositions.push(tx, y, tz);
             }
 
             const geo = new THREE.BufferGeometry();
             geo.setAttribute('position', new THREE.Float32BufferAttribute(pPositions, 3));
-            geo.userData = { tree: pTreeTargets, explode: pExplodeTargets };
+            
+            // Lưu trữ tất cả các đích đến
+            geo.userData = { 
+                tree: pTreeTargets, 
+                explode: pExplodeTargets,
+                heart: pHeartTargets 
+            };
 
             const mat = new THREE.PointsMaterial({
                 size: size,
@@ -186,7 +214,6 @@
             return points;
         }
 
-        // --- KHUNG ẢNH RETRO ĐỎ DỌC ---
         function createPhotos() {
             const geo = new THREE.PlaneGeometry(6, 9);
             const borderGeo = new THREE.PlaneGeometry(7, 10); 
@@ -208,9 +235,8 @@
             }
         }
 
-        // --- TẠO 2 TIÊU ĐỀ: 1 CHÍNH, 1 TIM ---
         function createDecorations() {
-            // 1. Tiêu đề CHÍNH
+            // Tiêu đề CHÍNH
             const tCanvas = document.createElement('canvas');
             tCanvas.width = 1024; tCanvas.height = 256;
             const tCtx = tCanvas.getContext('2d');
@@ -225,20 +251,20 @@
             titleMesh.position.set(0, 50, 0);
             scene.add(titleMesh);
 
-            // 2. Tiêu đề IU BẸPP (Dành cho khi thả tim)
+            // Tiêu đề IU BẸPP (Hồng)
             const lCanvas = document.createElement('canvas');
             lCanvas.width = 1024; lCanvas.height = 256;
             const lCtx = lCanvas.getContext('2d');
             lCtx.font = 'bold italic 90px "Times New Roman"';
-            lCtx.fillStyle = '#FF69B4'; lCtx.textAlign = 'center'; // Màu hồng
+            lCtx.fillStyle = '#FF69B4'; lCtx.textAlign = 'center'; 
             lCtx.shadowColor = "#FF1493"; lCtx.shadowBlur = 40; 
             lCtx.fillText("Iu Bẹpp 🫶", 512, 130);
             
             const lTex = new THREE.CanvasTexture(lCanvas);
             const lMat = new THREE.MeshBasicMaterial({ map: lTex, transparent: true, blending: THREE.AdditiveBlending });
             loveMesh = new THREE.Mesh(new THREE.PlaneGeometry(60, 15), lMat);
-            loveMesh.position.set(0, 50, 0);
-            loveMesh.visible = false; // Ẩn mặc định
+            loveMesh.position.set(0, 45, 10); // Đưa ra trước trái tim 1 xíu
+            loveMesh.visible = false; 
             scene.add(loveMesh);
 
             // Ngôi sao
@@ -262,15 +288,21 @@
 
         function updateParticleGroup(group, targetState, speed, handRotY, time, isBlinking) {
             const positions = group.geometry.attributes.position.array;
-            const targetKey = (targetState === 'TREE') ? 'tree' : 'explode';
-            const targets = group.geometry.userData[(targetState === 'PHOTO') ? 'explode' : targetKey];
+            
+            // XÁC ĐỊNH ĐÍCH ĐẾN DỰA TRÊN TRẠNG THÁI
+            let targetKey;
+            if (targetState === 'HEART') targetKey = 'heart';
+            else if (targetState === 'EXPLODE') targetKey = 'explode';
+            else targetKey = 'tree';
+
+            const targets = group.geometry.userData[targetKey];
 
             for(let i=0; i<positions.length; i++) {
                 positions[i] += (targets[i] - positions[i]) * speed;
             }
             group.geometry.attributes.position.needsUpdate = true;
             
-            // --- XOAY CHẬM (0.001) ---
+            // Xoay chậm
             group.rotation.y += 0.001; 
 
             if (targetState === 'TREE') {
@@ -301,25 +333,31 @@
                 }
             });
 
-            // LOGIC HIỂN THỊ TIÊU ĐỀ THEO TRẠNG THÁI
-            if (state === 'PHOTO') {
-                // Đang thả tim -> Hiện chữ Iu Bẹpp
+            // LOGIC HIỂN THỊ UI
+            if (state === 'HEART') {
+                // Đang thả tim (2 tay) -> Hiện chữ Iu Bẹpp + Ẩn Sao
                 titleMesh.visible = false;
                 loveMesh.visible = true;
+                starMesh.visible = false;
                 loveMesh.scale.lerp(new THREE.Vector3(1,1,1), 0.1);
-            } else {
-                // Bình thường -> Hiện Merry Xmas
+                // Ẩn ảnh đi để tập trung vào trái tim
+                photoMeshes.forEach(m => { m.scale.lerp(new THREE.Vector3(0,0,0), 0.1); m.visible = false; });
+
+            } else if (state === 'TREE') {
+                // Cây thông
                 titleMesh.visible = true;
                 loveMesh.visible = false;
-                titleMesh.scale.lerp(new THREE.Vector3(1,1,1), 0.1);
-            }
-
-            if (state === 'TREE') {
                 starMesh.visible = true;
+                titleMesh.scale.lerp(new THREE.Vector3(1,1,1), 0.1);
                 starMesh.rotation.z -= 0.02;
                 photoMeshes.forEach(m => { m.scale.lerp(new THREE.Vector3(0,0,0), 0.1); m.visible = false; });
+
             } else if (state === 'EXPLODE') {
+                // Bung quà (1 tay)
+                titleMesh.visible = true;
+                loveMesh.visible = false;
                 starMesh.visible = false;
+
                 const baseAngle = groupGold.rotation.y; 
                 const angleStep = (Math.PI * 2) / 5;
                 let bestIdx = 0; let maxZ = -999;
@@ -333,9 +371,9 @@
 
                     mesh.position.lerp(new THREE.Vector3(x, y, z), 0.1);
                     mesh.lookAt(camera.position);
-
-                    if (z > maxZ) { maxZ = z; bestIdx = i; }
                     
+                    // Hiệu ứng xa gần cho ảnh
+                    if (z > maxZ) { maxZ = z; bestIdx = i; }
                     if (z > 5) { 
                         const distScale = 1.0 + (z / CONFIG.photoOrbitRadius) * 0.8; 
                         mesh.scale.lerp(new THREE.Vector3(distScale, distScale, distScale), 0.1);
@@ -344,20 +382,6 @@
                     }
                 });
                 selectedIndex = bestIdx;
-
-            } else if (state === 'PHOTO') {
-                // CHẾ ĐỘ XEM ẢNH (KHI THẢ TIM)
-                starMesh.visible = false;
-                photoMeshes.forEach((mesh, i) => {
-                    if (i === selectedIndex) {
-                        mesh.position.lerp(new THREE.Vector3(0, 0, 60), 0.1);
-                        mesh.scale.lerp(new THREE.Vector3(5, 5, 5), 0.1);
-                        mesh.lookAt(camera.position);
-                        mesh.rotation.z = 0;
-                    } else {
-                        mesh.scale.lerp(new THREE.Vector3(0,0,0), 0.1);
-                    }
-                });
             }
 
             renderer.render(scene, camera);
@@ -374,30 +398,37 @@
             
             let frameCnt = 0;
             const hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
-            hands.setOptions({ maxNumHands: 1, modelComplexity: 0, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
+            
+            // Kích hoạt nhận diện 2 tay
+            hands.setOptions({ maxNumHands: 2, modelComplexity: 0, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
 
             hands.onResults(results => {
                 ctx.clearRect(0,0,100,75); ctx.drawImage(results.image, 0, 0, 100, 75);
 
-                if(results.multiHandLandmarks.length > 0) {
+                const handCount = results.multiHandLandmarks.length;
+                
+                if (handCount === 2) {
+                    // --- CÓ 2 TAY => CHUYỂN THÀNH HÌNH TRÁI TIM ---
+                    state = 'HEART';
+                } 
+                else if (handCount === 1) {
+                    // --- CÓ 1 TAY => BUNG QUÀ / CÂY THÔNG ---
                     const lm = results.multiHandLandmarks[0];
                     handX = lm[9].x; 
-
+                    
                     const tips = [8,12,16,20];
                     const wrist = lm[0];
                     let openDist = 0;
                     tips.forEach(i => openDist += Math.hypot(lm[i].x-wrist.x, lm[i].y-wrist.y));
                     const avgDist = openDist / 4;
-                    const pinchDist = Math.hypot(lm[4].x-lm[8].x, lm[4].y-lm[8].y);
 
-                    if (avgDist < 0.25) { 
-                        state = 'TREE'; 
-                    } else if (pinchDist < 0.05) {
-                        state = 'PHOTO'; // Đây là lúc hiện chữ "Iu Bẹpp"
-                    } else {
+                    if (avgDist > 0.25) { 
                         state = 'EXPLODE'; 
+                    } else {
+                        state = 'TREE'; 
                     }
-                } else {
+                } 
+                else {
                     state = 'TREE'; 
                 }
             });
