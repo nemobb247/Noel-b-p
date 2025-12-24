@@ -21,11 +21,15 @@
         
         .badge {
             display: inline-block; background: rgba(0,0,0,0.7);
-            border: 2px solid #FFD700; color: #FFD700;
+            /* Viền Kẹo Gậy Retro */
+            border: 5px solid transparent !important;
+            border-image: repeating-linear-gradient(45deg, #c0392b, #c0392b 10px, #ecf0f1 10px, #ecf0f1 20px) 1 !important;
+            box-shadow: 0 0 15px #c0392b !important;
+            
+            color: #FFD700;
             padding: 10px 25px; border-radius: 50px;
             font-size: 18px; font-weight: bold; margin-bottom: 10px;
             text-transform: uppercase; letter-spacing: 1px;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
             text-shadow: 0 0 10px #FFD700;
         }
 
@@ -34,7 +38,11 @@
         button {
             pointer-events: auto; cursor: pointer;
             background: linear-gradient(to bottom, #D32F2F, #8B0000); 
-            color: #FFF; border: 2px solid #FFD700;
+            color: #FFF; 
+            /* Viền Kẹo Gậy cho nút bấm luôn */
+            border: 3px solid transparent;
+            border-image: repeating-linear-gradient(45deg, #FFD700, #FFD700 5px, #FFA500 5px, #FFA500 10px) 1;
+            
             padding: 15px 50px; border-radius: 30px; 
             font-weight: 800; font-size: 16px;
             box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
@@ -45,50 +53,59 @@
         #camera-preview {
             position: absolute; top: 15px; right: 15px;
             width: 120px; height: 90px;
-            border: 2px solid rgba(255,0,0,0.5); 
-            transform: scaleX(-1); opacity: 0.6; border-radius: 8px;
+            /* Viền Kẹo Gậy cho Camera */
+            border: 4px solid transparent !important;
+            border-image: repeating-linear-gradient(45deg, #c0392b, #c0392b 10px, #ecf0f1 10px, #ecf0f1 20px) 1 !important;
+            transform: scaleX(-1); opacity: 0.8; border-radius: 8px;
+            box-shadow: 0 0 15px #c0392b;
         }
         
         #error-log { display: none; position: absolute; top: 0; left: 0; color: red; background: rgba(0,0,0,0.8); z-index: 999; padding: 10px; }
-.memory-container {
-    position: fixed;
-    bottom: 100px;
-    left: 0;
-    width: 100%;
-    height: 150px;
-    z-index: 999999;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.5s ease;
-    background: rgba(0, 0, 0, 0.6);
-    border-top: 3px solid #c0392b;
-    border-bottom: 3px solid #c0392b;
-}
 
-.badge, #camera-preview, canvas, video {
-    border: 5px solid transparent !important;
-    border-image: repeating-linear-gradient(45deg, #c0392b, #c0392b 10px, #ecf0f1 10px, #ecf0f1 20px) 1 !important;
-    box-shadow: 0 0 15px #c0392b !important;
-}
+        /* --- Dải ảnh Ký Ức --- */
+        .memory-container {
+            position: fixed;
+            bottom: 110px; /* Cao hơn nút bấm một chút */
+            left: 0;
+            width: 100%;
+            height: 140px;
+            z-index: 999999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Hiệu ứng nảy */
+            transform: translateY(20px);
+            
+            background: rgba(0, 0, 0, 0.6);
+            border-top: 3px solid #c0392b;
+            border-bottom: 3px solid #c0392b;
+            pointer-events: none; /* Để bấm xuyên qua được nếu cần */
+        }
 
-.memory-track {
-    display: flex;
-    width: max-content;
-    animation: scrollText 20s linear infinite;
-}
+        .memory-container.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
 
-.memory-track img {
-    height: 110px;
-    width: auto;
-    margin: 0 15px;
-    border: 3px solid #fff;
-    box-shadow: 0 0 10px gold;
-}
+        .memory-track {
+            display: flex;
+            width: max-content;
+            animation: scrollText 20s linear infinite;
+        }
 
-@keyframes scrollText {
-    0% { transform: translateX(10%); }
-    100% { transform: translateX(-100%); }
-}
+        .memory-track img {
+            height: 100px;
+            width: auto;
+            margin: 10px 15px;
+            border: 3px solid #fff;
+            box-shadow: 0 0 10px gold;
+            border-radius: 5px;
+        }
+
+        @keyframes scrollText {
+            0% { transform: translateX(5%); }
+            100% { transform: translateX(-100%); }
+        }
     </style>
 </head>
 <body>
@@ -102,25 +119,24 @@
     </div>
 
     <div id="canvas-container"></div>
-<div class="memory-container">
-    <div class="memory-track">
-        <img src="./image1.jpeg">
-        <img src="./image2.jpeg">
-        <img src="./image3.jpeg">
-        <img src="./image4.jpeg">
-        <img src="./image5.jpeg">
-        <img src="./image1.jpeg">
-        <img src="./image2.jpeg">
-        <img src="./image3.jpeg">
+
+    <div class="memory-container" id="memoryLane">
+        <div class="memory-track">
+            <img src="./image1.jpeg">
+            <img src="./image2.jpeg">
+            <img src="./image3.jpeg">
+            <img src="./image4.jpeg">
+            <img src="./image5.jpeg">
+            <img src="./image1.jpeg">
+            <img src="./image2.jpeg">
+            <img src="./image3.jpeg">
+        </div>
     </div>
-</div>
+
     <video class="input_video" style="display:none"></video>
     <canvas id="camera-preview"></canvas>
 
     <script>
-        // ==========================================
-        // 1. Vandiep
-        // ==========================================
         const MUSIC_URL = "./audio.mp3";
         let bgMusic = new Audio(MUSIC_URL);
         bgMusic.loop = true; bgMusic.volume = 1.0;
@@ -130,7 +146,6 @@
         const photoTextures = [];
         photoFiles.forEach((f, i) => photoTextures[i] = loader.load(f));
 
-        // --- Vandiep ---
         function createCustomTexture(type) {
             const canvas = document.createElement('canvas');
             canvas.width = 128; canvas.height = 128;
@@ -138,30 +153,24 @@
             const cx = 64, cy = 64;
 
             if (type === 'gold_glow') {
-                // Vandiep
                 const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, 40);
                 grd.addColorStop(0, '#FFFFFF'); 
                 grd.addColorStop(0.2, '#FFFFE0'); 
                 grd.addColorStop(0.5, '#FFD700');
                 grd.addColorStop(1, 'rgba(0,0,0,0)');
                 ctx.fillStyle = grd; ctx.fillRect(0,0,128,128);
-
             } else if (type === 'red_light') {
-                // Vandiep
                 const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, 50);
                 grd.addColorStop(0, '#FFAAAA'); 
                 grd.addColorStop(0.3, '#FF0000'); 
                 grd.addColorStop(1, 'rgba(0,0,0,0)');
                 ctx.fillStyle = grd; ctx.fillRect(0,0,128,128);
-
             } else if (type === 'gift_red') {
-                // Vandiep
-                ctx.fillStyle = '#D32F2F'; // Vandiep
+                ctx.fillStyle = '#D32F2F'; 
                 ctx.fillRect(20, 20, 88, 88);
-                ctx.fillStyle = '#FFD700'; // Vandiep
-                ctx.fillRect(54, 20, 20, 88); // Vandiep
-                ctx.fillRect(20, 54, 88, 20); // Vandiep
-                // Vandiep
+                ctx.fillStyle = '#FFD700'; 
+                ctx.fillRect(54, 20, 20, 88); 
+                ctx.fillRect(20, 54, 88, 20); 
                 ctx.strokeStyle = "rgba(0,0,0,0.3)"; ctx.lineWidth=2; ctx.strokeRect(20,20,88,88);
             }
             return new THREE.CanvasTexture(canvas);
@@ -173,13 +182,10 @@
             gift: createCustomTexture('gift_red')
         };
 
-        // ==========================================
-        // 2. Vandiep
-        // ==========================================
         const CONFIG = {
-            goldCount: 2000,    // Hạt vàng
-            redCount: 300,      // Số lượng đèn đỏ
-            giftCount: 150,     // Số lượng hộp quà
+            goldCount: 2000,    
+            redCount: 300,      
+            giftCount: 150,     
             explodeRadius: 65,  
             photoOrbitRadius: 25,
             treeHeight: 70,
@@ -187,7 +193,7 @@
         };
 
         let scene, camera, renderer;
-        let groupGold, groupRed, groupGift; // Vandiep
+        let groupGold, groupRed, groupGift; 
         let photoMeshes = [];    
         let titleMesh, starMesh;
         
@@ -195,9 +201,6 @@
         let selectedIndex = 0;
         let handX = 0.5;
 
-        // ==========================================
-        // 3. Vandiep
-        // ==========================================
         function init3D() {
             const container = document.getElementById('canvas-container');
             scene = new THREE.Scene();
@@ -211,10 +214,9 @@
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             container.appendChild(renderer.domElement);
 
-            // Vandiep
             groupGold = createParticleSystem('gold', CONFIG.goldCount, 2.0);
-            groupRed = createParticleSystem('red', CONFIG.redCount, 3.5); // Vandiep
-            groupGift = createParticleSystem('gift', CONFIG.giftCount, 3.0); // Vandiep
+            groupRed = createParticleSystem('red', CONFIG.redCount, 3.5); 
+            groupGift = createParticleSystem('gift', CONFIG.giftCount, 3.0); 
 
             createPhotos();
             createDecorations();
@@ -227,11 +229,9 @@
             const pTreeTargets = [];
             
             for(let i=0; i<count; i++) {
-                // --- Vandiep ---
                 const h = Math.random() * CONFIG.treeHeight; 
                 const y = h - CONFIG.treeHeight / 2;
                 
-                // Vandiep
                 let radiusRatio = (type === 'gold') ? Math.sqrt(Math.random()) : 0.9 + Math.random()*0.1;
                 
                 const maxR = (1 - (h / CONFIG.treeHeight)) * CONFIG.treeBaseRadius;
@@ -242,13 +242,11 @@
                 const tz = r * Math.sin(theta);
                 pTreeTargets.push(tx, y, tz);
 
-                // --- Vandiep ---
                 const u = Math.random();
                 const v = Math.random();
                 const phi = Math.acos(2 * v - 1);
                 const lam = 2 * Math.PI * u;
                 
-                // Vandiep
                 let radMult = (type === 'gift') ? 1.2 : 1.0;
                 const rad = CONFIG.explodeRadius * Math.cbrt(Math.random()) * radMult;
 
@@ -257,7 +255,6 @@
                 const ez = rad * Math.cos(phi);
                 pExplodeTargets.push(ex, ey, ez);
 
-                // Vandiep
                 pPositions.push(tx, y, tz);
             }
 
@@ -269,7 +266,6 @@
                 size: size,
                 map: textures[type],
                 transparent: true, opacity: 1.0,
-                // Vandiep
                 blending: (type === 'gift') ? THREE.NormalBlending : THREE.AdditiveBlending, 
                 depthWrite: false,
                 sizeAttenuation: true
@@ -302,7 +298,6 @@
         }
 
         function createDecorations() {
-            // Vandiep
             const canvas = document.createElement('canvas');
             canvas.width = 1024; canvas.height = 256;
             const ctx = canvas.getContext('2d');
@@ -317,7 +312,6 @@
             titleMesh.position.set(0, 50, 0);
             scene.add(titleMesh);
 
-            // Vandiep
             const starCanvas = document.createElement('canvas');
             starCanvas.width = 128; starCanvas.height = 128;
             const sCtx = starCanvas.getContext('2d');
@@ -346,13 +340,9 @@
             }
             group.geometry.attributes.position.needsUpdate = true;
             
-            // Vandiep
             if (targetState === 'TREE') {
                 group.rotation.y += 0.003;
-                // Vandiep
                 if(isBlinking) {
-                    // Vandiep
-                    // Vandiep
                     const scale = 1 + Math.sin(time * 5) * 0.2;
                     group.scale.set(scale, scale, scale);
                 } else {
@@ -370,12 +360,10 @@
             const speed = 0.06;
             const handRotY = (handX - 0.5) * 2.5;
 
-            // Vandiep
             updateParticleGroup(groupGold, state, speed, handRotY, time, false);
-            updateParticleGroup(groupRed, state, speed, handRotY, time, true); // Vandiep
+            updateParticleGroup(groupRed, state, speed, handRotY, time, true); 
             updateParticleGroup(groupGift, state, speed, handRotY, time, false);
 
-            // Vandiep
             photoMeshes.forEach((mesh, i) => {
                 if(!mesh.material.map && photoTextures[i]) {
                     mesh.material.map = photoTextures[i]; mesh.material.needsUpdate = true;
@@ -432,9 +420,6 @@
             renderer.render(scene, camera);
         }
 
-        // ==========================================
-        // 4. Vandiep
-        // ==========================================
         function startSystem() {
             document.getElementById('btnStart').style.display = 'none';
             bgMusic.play().catch(e => console.log(e));
@@ -492,18 +477,18 @@
             if(camera) { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }
         });
         function logError(e) { document.getElementById('error-log').style.display='block'; document.getElementById('error-log').innerText+=e+"\n"; }
-setInterval(() => {
-    const memoryLane = document.querySelector('.memory-container');
-    if (memoryLane) {
-        if (document.body.innerText.includes("Bung Quà")) {
-            memoryLane.style.opacity = '1';
-            memoryLane.style.visibility = 'visible';
-        } else {
-            memoryLane.style.opacity = '0';
-            memoryLane.style.visibility = 'hidden';
-        }
-    }
-}, 200);
+
+        // --- CẬP NHẬT MỚI: Dùng biến state để hiện ảnh (Mượt hơn) ---
+        setInterval(() => {
+            const memoryLane = document.getElementById('memoryLane');
+            if (memoryLane) {
+                if (state === 'EXPLODE') { // Kiểm tra trực tiếp trạng thái
+                    memoryLane.classList.add('show');
+                } else {
+                    memoryLane.classList.remove('show');
+                }
+            }
+        }, 100);
     </script>
 </body>
 </html>
