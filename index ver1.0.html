@@ -277,25 +277,25 @@
         }
 
         function createPhotos() {
-            const geo = new THREE.PlaneGeometry(8, 8);
-            const borderGeo = new THREE.PlaneGeometry(9, 9); 
-            const borderMat = new THREE.MeshBasicMaterial({ color: 0xFFD700 }); 
+    const geo = new THREE.PlaneGeometry(6, 9);
+    const borderGeo = new THREE.PlaneGeometry(7, 10);
+    const borderMat = new THREE.MeshBasicMaterial({ color: 0x8B0000 });
 
-            for(let i=0; i<5; i++) {
-                const mat = new THREE.MeshBasicMaterial({ 
-                    map: photoTextures[i], side: THREE.DoubleSide 
-                });
-                const mesh = new THREE.Mesh(geo, mat);
-                const border = new THREE.Mesh(borderGeo, borderMat);
-                border.position.z = -0.1; 
-                mesh.add(border);
-                
-                mesh.visible = false;
-                mesh.scale.set(0,0,0);
-                scene.add(mesh);
-                photoMeshes.push(mesh);
-            }
-        }
+    for(let i=0; i<5; i++) {
+        const mat = new THREE.MeshBasicMaterial({ 
+            map: photoTextures[i], side: THREE.DoubleSide 
+        });
+        const mesh = new THREE.Mesh(geo, mat);
+        const border = new THREE.Mesh(borderGeo, borderMat);
+        border.position.z = -0.1; 
+        mesh.add(border);
+        
+        mesh.visible = false;
+        mesh.scale.set(0,0,0);
+        scene.add(mesh);
+        photoMeshes.push(mesh);
+    }
+}
 
         function createDecorations() {
             const canvas = document.createElement('canvas');
@@ -330,29 +330,29 @@
             scene.add(starMesh);
         }
 
-        function updateParticleGroup(group, targetState, speed, handRotY, time, isBlinking) {
-            const positions = group.geometry.attributes.position.array;
-            const targetKey = (targetState === 'TREE') ? 'tree' : 'explode';
-            const targets = group.geometry.userData[(targetState === 'PHOTO') ? 'explode' : targetKey];
+  function updateParticleGroup(group, targetState, speed, handRotY, time, isBlinking) {
+    const positions = group.geometry.attributes.position.array;
+    const targetKey = (targetState === 'TREE') ? 'tree' : 'explode';
+    const targets = group.geometry.userData[(targetState === 'PHOTO') ? 'explode' : targetKey];
 
-            for(let i=0; i<positions.length; i++) {
-                positions[i] += (targets[i] - positions[i]) * speed;
-            }
-            group.geometry.attributes.position.needsUpdate = true;
-            
-            if (targetState === 'TREE') {
-                group.rotation.y += 0.003;
-                if(isBlinking) {
-                    const scale = 1 + Math.sin(time * 5) * 0.2;
-                    group.scale.set(scale, scale, scale);
-                } else {
-                    group.scale.set(1,1,1);
-                }
-            } else {
-                group.scale.set(1,1,1);
-                group.rotation.y += (handRotY - group.rotation.y) * 0.05;
-            }
+    for(let i=0; i<positions.length; i++) {
+        positions[i] += (targets[i] - positions[i]) * speed;
+    }
+    group.geometry.attributes.position.needsUpdate = true;
+
+    group.rotation.y += 0.004;
+
+    if (targetState === 'TREE') {
+        if(isBlinking) {
+            const scale = 1 + Math.sin(time * 5) * 0.2;
+            group.scale.set(scale, scale, scale);
+        } else {
+            group.scale.set(1,1,1);
         }
+    } else {
+        group.scale.set(1,1,1);
+    }
+}
 
         function animate() {
             requestAnimationFrame(animate);
