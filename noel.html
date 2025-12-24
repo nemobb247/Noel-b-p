@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Christmas Gifts & Lights</title>
+    <title>Merry X'mas Bẹpp</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
@@ -18,106 +18,38 @@
             position: absolute; bottom: 30px; width: 100%;
             text-align: center; pointer-events: none; z-index: 100;
         }
-        
-        .badge {
-            display: inline-block; background: rgba(0,0,0,0.7);
-            border: 2px solid #D32F2F; color: #FFD700;
-            padding: 10px 25px; border-radius: 50px;
-            font-size: 18px; font-weight: bold; margin-bottom: 10px;
-            text-transform: uppercase; letter-spacing: 1px;
-            box-shadow: 0 0 20px rgba(211, 47, 47, 0.5);
-            text-shadow: 0 0 10px #FFD700;
-        }
 
-        .guide { color: #ccc; font-size: 13px; margin-bottom: 20px; text-shadow: 0 2px 4px black;}
-
+        /* Nút bấm Open mới */
         button {
             pointer-events: auto; cursor: pointer;
             background: linear-gradient(to bottom, #D32F2F, #8B0000); 
             color: #FFF; border: 2px solid #FFD700;
-            padding: 15px 50px; border-radius: 30px; 
-            font-weight: 800; font-size: 16px;
+            padding: 15px 40px; border-radius: 30px; 
+            font-weight: 800; font-size: 20px; /* Chữ to rõ */
             box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
             animation: pulse 1.5s infinite;
+            font-family: 'Times New Roman', serif; /* Font sang trọng */
         }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
         #camera-preview {
             position: absolute; top: 15px; right: 15px;
-            width: 120px; height: 160px; /* Chỉnh camera dọc cho hợp form */
-            border: 4px solid #8B0000; 
-            transform: scaleX(-1); opacity: 0.6; border-radius: 8px;
+            width: 120px; height: 160px;
+            border: 3px solid #8B0000; 
+            transform: scaleX(-1); opacity: 0.5; border-radius: 8px;
             box-shadow: 0 0 10px #8B0000;
         }
         
         #error-log { display: none; position: absolute; top: 0; left: 0; color: red; background: rgba(0,0,0,0.8); z-index: 999; padding: 10px; }
-
-        /* KHUNG ẢNH KÝ ỨC DƯỚI MÀN HÌNH */
-        .memory-container {
-            position: fixed;
-            bottom: 110px;
-            left: 0;
-            width: 100%;
-            height: 140px;
-            z-index: 999999;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.5s ease;
-            background: rgba(0, 0, 0, 0.6);
-            border-top: 3px solid #8B0000;
-            border-bottom: 3px solid #8B0000;
-        }
-
-        .memory-container.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .memory-track {
-            display: flex;
-            width: max-content;
-            animation: scrollText 20s linear infinite;
-        }
-
-        .memory-track img {
-            height: 100px;
-            width: auto;
-            margin: 10px 15px;
-            border: 4px solid #FFF; /* Viền trắng kiểu ảnh in */
-            box-shadow: 0 0 10px #8B0000;
-        }
-
-        @keyframes scrollText {
-            0% { transform: translateX(5%); }
-            100% { transform: translateX(-100%); }
-        }
     </style>
 </head>
 <body>
     <div id="error-log"></div>
     <div id="ui-layer">
-        <div id="status" class="badge">🎄 Giang Sinh An Lanh 🎄</div>
-        <div class="guide">
-            🖐 <b>Xòe:</b> Bung Quà & Đèn &nbsp;|&nbsp; 👌 <b>Pinch:</b> Xem ảnh &nbsp;|&nbsp; ✊ <b>Nắm:</b> Thu cây
-        </div>
-        <button id="btnStart" onclick="startSystem()">BẮT ĐẦU</button>
+        <button id="btnStart" onclick="startSystem()">Open 🎁</button>
     </div>
 
     <div id="canvas-container"></div>
-
-    <div class="memory-container" id="memoryLane">
-        <div class="memory-track">
-            <img src="./image1.jpeg">
-            <img src="./image2.jpeg">
-            <img src="./image3.jpeg">
-            <img src="./image4.jpeg">
-            <img src="./image5.jpeg">
-            <img src="./image1.jpeg">
-            <img src="./image2.jpeg">
-            <img src="./image3.jpeg">
-        </div>
-    </div>
-
     <video class="input_video" style="display:none"></video>
     <canvas id="camera-preview"></canvas>
 
@@ -127,7 +59,6 @@
         bgMusic.loop = true; bgMusic.volume = 1.0;
 
         const loader = new THREE.TextureLoader();
-        // Kiểm tra đúng tên file ảnh của bạn ở đây
         const photoFiles = ['./image1.jpeg', './image2.jpeg', './image3.jpeg', './image4.jpeg', './image5.jpeg'];
         const photoTextures = [];
         photoFiles.forEach((f, i) => photoTextures[i] = loader.load(f));
@@ -181,7 +112,7 @@
         let scene, camera, renderer;
         let groupGold, groupRed, groupGift; 
         let photoMeshes = [];    
-        let titleMesh, starMesh;
+        let titleMesh, loveMesh, starMesh; // Thêm loveMesh
         
         let state = 'TREE'; 
         let selectedIndex = 0;
@@ -255,11 +186,9 @@
             return points;
         }
 
-        // --- KHUNG ẢNH RETRO MỚI ---
+        // --- KHUNG ẢNH RETRO ĐỎ DỌC ---
         function createPhotos() {
-            // Tỷ lệ dọc 6x9 (như ảnh điện thoại)
             const geo = new THREE.PlaneGeometry(6, 9);
-            // Viền đỏ đậm (Dark Red)
             const borderGeo = new THREE.PlaneGeometry(7, 10); 
             const borderMat = new THREE.MeshBasicMaterial({ color: 0x8B0000 }); 
 
@@ -279,21 +208,40 @@
             }
         }
 
+        // --- TẠO 2 TIÊU ĐỀ: 1 CHÍNH, 1 TIM ---
         function createDecorations() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 1024; canvas.height = 256;
-            const ctx = canvas.getContext('2d');
-            ctx.font = 'bold italic 90px "Times New Roman"';
-            ctx.fillStyle = '#FFD700'; ctx.textAlign = 'center';
-            ctx.shadowColor = "#FF0000"; ctx.shadowBlur = 40; 
-            ctx.fillText("MERRY CHRISTMAS", 512, 130);
+            // 1. Tiêu đề CHÍNH
+            const tCanvas = document.createElement('canvas');
+            tCanvas.width = 1024; tCanvas.height = 256;
+            const tCtx = tCanvas.getContext('2d');
+            tCtx.font = 'bold italic 90px "Times New Roman"';
+            tCtx.fillStyle = '#FFD700'; tCtx.textAlign = 'center';
+            tCtx.shadowColor = "#FF0000"; tCtx.shadowBlur = 40; 
+            tCtx.fillText("Merry X'mas Bẹpp 🎄✨", 512, 130);
             
-            const tex = new THREE.CanvasTexture(canvas);
-            const mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, blending: THREE.AdditiveBlending });
-            titleMesh = new THREE.Mesh(new THREE.PlaneGeometry(60, 15), mat);
+            const tTex = new THREE.CanvasTexture(tCanvas);
+            const tMat = new THREE.MeshBasicMaterial({ map: tTex, transparent: true, blending: THREE.AdditiveBlending });
+            titleMesh = new THREE.Mesh(new THREE.PlaneGeometry(60, 15), tMat);
             titleMesh.position.set(0, 50, 0);
             scene.add(titleMesh);
 
+            // 2. Tiêu đề IU BẸPP (Dành cho khi thả tim)
+            const lCanvas = document.createElement('canvas');
+            lCanvas.width = 1024; lCanvas.height = 256;
+            const lCtx = lCanvas.getContext('2d');
+            lCtx.font = 'bold italic 90px "Times New Roman"';
+            lCtx.fillStyle = '#FF69B4'; lCtx.textAlign = 'center'; // Màu hồng
+            lCtx.shadowColor = "#FF1493"; lCtx.shadowBlur = 40; 
+            lCtx.fillText("Iu Bẹpp 🫶", 512, 130);
+            
+            const lTex = new THREE.CanvasTexture(lCanvas);
+            const lMat = new THREE.MeshBasicMaterial({ map: lTex, transparent: true, blending: THREE.AdditiveBlending });
+            loveMesh = new THREE.Mesh(new THREE.PlaneGeometry(60, 15), lMat);
+            loveMesh.position.set(0, 50, 0);
+            loveMesh.visible = false; // Ẩn mặc định
+            scene.add(loveMesh);
+
+            // Ngôi sao
             const starCanvas = document.createElement('canvas');
             starCanvas.width = 128; starCanvas.height = 128;
             const sCtx = starCanvas.getContext('2d');
@@ -312,7 +260,6 @@
             scene.add(starMesh);
         }
 
-        // --- HÀM CẬP NHẬT HẠT: ĐÃ SỬA ĐỂ TỰ XOAY ---
         function updateParticleGroup(group, targetState, speed, handRotY, time, isBlinking) {
             const positions = group.geometry.attributes.position.array;
             const targetKey = (targetState === 'TREE') ? 'tree' : 'explode';
@@ -323,8 +270,8 @@
             }
             group.geometry.attributes.position.needsUpdate = true;
             
-            // TỰ ĐỘNG XOAY VÒNG VÒNG (Bất kể trạng thái nào)
-            group.rotation.y += 0.004; 
+            // --- XOAY CHẬM (0.001) ---
+            group.rotation.y += 0.001; 
 
             if (targetState === 'TREE') {
                 if(isBlinking) {
@@ -335,7 +282,6 @@
                 }
             } else {
                 group.scale.set(1,1,1);
-                // Đã xóa dòng xoay theo tay
             }
         }
 
@@ -355,22 +301,31 @@
                 }
             });
 
-            if (state === 'TREE') {
-                titleMesh.visible = true; starMesh.visible = true;
+            // LOGIC HIỂN THỊ TIÊU ĐỀ THEO TRẠNG THÁI
+            if (state === 'PHOTO') {
+                // Đang thả tim -> Hiện chữ Iu Bẹpp
+                titleMesh.visible = false;
+                loveMesh.visible = true;
+                loveMesh.scale.lerp(new THREE.Vector3(1,1,1), 0.1);
+            } else {
+                // Bình thường -> Hiện Merry Xmas
+                titleMesh.visible = true;
+                loveMesh.visible = false;
                 titleMesh.scale.lerp(new THREE.Vector3(1,1,1), 0.1);
+            }
+
+            if (state === 'TREE') {
+                starMesh.visible = true;
                 starMesh.rotation.z -= 0.02;
                 photoMeshes.forEach(m => { m.scale.lerp(new THREE.Vector3(0,0,0), 0.1); m.visible = false; });
-
             } else if (state === 'EXPLODE') {
-                titleMesh.visible = false; starMesh.visible = false;
-                
+                starMesh.visible = false;
                 const baseAngle = groupGold.rotation.y; 
                 const angleStep = (Math.PI * 2) / 5;
                 let bestIdx = 0; let maxZ = -999;
 
                 photoMeshes.forEach((mesh, i) => {
                     mesh.visible = true;
-                    // Xoay theo groupGold để đồng bộ
                     const angle = baseAngle + i * angleStep; 
                     const x = Math.sin(angle) * CONFIG.photoOrbitRadius;
                     const z = Math.cos(angle) * CONFIG.photoOrbitRadius;
@@ -391,6 +346,8 @@
                 selectedIndex = bestIdx;
 
             } else if (state === 'PHOTO') {
+                // CHẾ ĐỘ XEM ẢNH (KHI THẢ TIM)
+                starMesh.visible = false;
                 photoMeshes.forEach((mesh, i) => {
                     if (i === selectedIndex) {
                         mesh.position.lerp(new THREE.Vector3(0, 0, 60), 0.1);
@@ -414,7 +371,6 @@
             const video = document.getElementsByClassName('input_video')[0];
             const canvas = document.getElementById('camera-preview');
             const ctx = canvas.getContext('2d');
-            const statusDiv = document.getElementById('status');
             
             let frameCnt = 0;
             const hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
@@ -436,17 +392,13 @@
 
                     if (avgDist < 0.25) { 
                         state = 'TREE'; 
-                        statusDiv.innerText = "✊ Thu Cây Thông"; statusDiv.style.color = "#FFD700";
                     } else if (pinchDist < 0.05) {
-                        state = 'PHOTO';
-                        statusDiv.innerText = "👌 Xem Ảnh"; statusDiv.style.color = "#00FFFF";
+                        state = 'PHOTO'; // Đây là lúc hiện chữ "Iu Bẹpp"
                     } else {
                         state = 'EXPLODE'; 
-                        statusDiv.innerText = "🖐 Bung Quà & Ảnh"; statusDiv.style.color = "#FFA500";
                     }
                 } else {
                     state = 'TREE'; 
-                    statusDiv.innerText = "🎄 Giang Sinh An Lanh 🎄"; statusDiv.style.color = "#FFF";
                 }
             });
 
@@ -463,18 +415,6 @@
             if(camera) { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }
         });
         function logError(e) { document.getElementById('error-log').style.display='block'; document.getElementById('error-log').innerText+=e+"\n"; }
-
-        // Logic hiện ảnh ký ức mượt mà
-        setInterval(() => {
-            const memoryLane = document.getElementById('memoryLane');
-            if (memoryLane) {
-                if (state === 'EXPLODE') { 
-                    memoryLane.classList.add('show');
-                } else {
-                    memoryLane.classList.remove('show');
-                }
-            }
-        }, 100);
     </script>
 </body>
 </html>
