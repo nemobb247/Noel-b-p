@@ -21,15 +21,11 @@
         
         .badge {
             display: inline-block; background: rgba(0,0,0,0.7);
-            /* Viền Kẹo Gậy Retro */
-            border: 5px solid transparent !important;
-            border-image: repeating-linear-gradient(45deg, #c0392b, #c0392b 10px, #ecf0f1 10px, #ecf0f1 20px) 1 !important;
-            box-shadow: 0 0 15px #c0392b !important;
-            
-            color: #FFD700;
+            border: 2px solid #D32F2F; color: #FFD700;
             padding: 10px 25px; border-radius: 50px;
             font-size: 18px; font-weight: bold; margin-bottom: 10px;
             text-transform: uppercase; letter-spacing: 1px;
+            box-shadow: 0 0 20px rgba(211, 47, 47, 0.5);
             text-shadow: 0 0 10px #FFD700;
         }
 
@@ -38,11 +34,7 @@
         button {
             pointer-events: auto; cursor: pointer;
             background: linear-gradient(to bottom, #D32F2F, #8B0000); 
-            color: #FFF; 
-            /* Viền Kẹo Gậy cho nút bấm luôn */
-            border: 3px solid transparent;
-            border-image: repeating-linear-gradient(45deg, #FFD700, #FFD700 5px, #FFA500 5px, #FFA500 10px) 1;
-            
+            color: #FFF; border: 2px solid #FFD700;
             padding: 15px 50px; border-radius: 30px; 
             font-weight: 800; font-size: 16px;
             box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
@@ -52,39 +44,33 @@
 
         #camera-preview {
             position: absolute; top: 15px; right: 15px;
-            width: 120px; height: 90px;
-            /* Viền Kẹo Gậy cho Camera */
-            border: 4px solid transparent !important;
-            border-image: repeating-linear-gradient(45deg, #c0392b, #c0392b 10px, #ecf0f1 10px, #ecf0f1 20px) 1 !important;
-            transform: scaleX(-1); opacity: 0.8; border-radius: 8px;
-            box-shadow: 0 0 15px #c0392b;
+            width: 120px; height: 160px; /* Chỉnh camera dọc cho hợp form */
+            border: 4px solid #8B0000; 
+            transform: scaleX(-1); opacity: 0.6; border-radius: 8px;
+            box-shadow: 0 0 10px #8B0000;
         }
         
         #error-log { display: none; position: absolute; top: 0; left: 0; color: red; background: rgba(0,0,0,0.8); z-index: 999; padding: 10px; }
 
-        /* --- Dải ảnh Ký Ức --- */
+        /* KHUNG ẢNH KÝ ỨC DƯỚI MÀN HÌNH */
         .memory-container {
             position: fixed;
-            bottom: 110px; /* Cao hơn nút bấm một chút */
+            bottom: 110px;
             left: 0;
             width: 100%;
             height: 140px;
             z-index: 999999;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Hiệu ứng nảy */
-            transform: translateY(20px);
-            
+            transition: all 0.5s ease;
             background: rgba(0, 0, 0, 0.6);
-            border-top: 3px solid #c0392b;
-            border-bottom: 3px solid #c0392b;
-            pointer-events: none; /* Để bấm xuyên qua được nếu cần */
+            border-top: 3px solid #8B0000;
+            border-bottom: 3px solid #8B0000;
         }
 
         .memory-container.show {
             opacity: 1;
             visibility: visible;
-            transform: translateY(0);
         }
 
         .memory-track {
@@ -97,9 +83,8 @@
             height: 100px;
             width: auto;
             margin: 10px 15px;
-            border: 3px solid #fff;
-            box-shadow: 0 0 10px gold;
-            border-radius: 5px;
+            border: 4px solid #FFF; /* Viền trắng kiểu ảnh in */
+            box-shadow: 0 0 10px #8B0000;
         }
 
         @keyframes scrollText {
@@ -142,6 +127,7 @@
         bgMusic.loop = true; bgMusic.volume = 1.0;
 
         const loader = new THREE.TextureLoader();
+        // Kiểm tra đúng tên file ảnh của bạn ở đây
         const photoFiles = ['./image1.jpeg', './image2.jpeg', './image3.jpeg', './image4.jpeg', './image5.jpeg'];
         const photoTextures = [];
         photoFiles.forEach((f, i) => photoTextures[i] = loader.load(f));
@@ -231,13 +217,10 @@
             for(let i=0; i<count; i++) {
                 const h = Math.random() * CONFIG.treeHeight; 
                 const y = h - CONFIG.treeHeight / 2;
-                
                 let radiusRatio = (type === 'gold') ? Math.sqrt(Math.random()) : 0.9 + Math.random()*0.1;
-                
                 const maxR = (1 - (h / CONFIG.treeHeight)) * CONFIG.treeBaseRadius;
                 const r = maxR * radiusRatio; 
                 const theta = Math.random() * Math.PI * 2;
-                
                 const tx = r * Math.cos(theta);
                 const tz = r * Math.sin(theta);
                 pTreeTargets.push(tx, y, tz);
@@ -246,15 +229,12 @@
                 const v = Math.random();
                 const phi = Math.acos(2 * v - 1);
                 const lam = 2 * Math.PI * u;
-                
                 let radMult = (type === 'gift') ? 1.2 : 1.0;
                 const rad = CONFIG.explodeRadius * Math.cbrt(Math.random()) * radMult;
-
                 const ex = rad * Math.sin(phi) * Math.cos(lam);
                 const ey = rad * Math.sin(phi) * Math.sin(lam);
                 const ez = rad * Math.cos(phi);
                 pExplodeTargets.push(ex, ey, ez);
-
                 pPositions.push(tx, y, tz);
             }
 
@@ -267,8 +247,7 @@
                 map: textures[type],
                 transparent: true, opacity: 1.0,
                 blending: (type === 'gift') ? THREE.NormalBlending : THREE.AdditiveBlending, 
-                depthWrite: false,
-                sizeAttenuation: true
+                depthWrite: false, sizeAttenuation: true
             });
 
             const points = new THREE.Points(geo, mat);
@@ -276,26 +255,29 @@
             return points;
         }
 
+        // --- KHUNG ẢNH RETRO MỚI ---
         function createPhotos() {
-    const geo = new THREE.PlaneGeometry(6, 9);
-    const borderGeo = new THREE.PlaneGeometry(7, 10);
-    const borderMat = new THREE.MeshBasicMaterial({ color: 0x8B0000 });
+            // Tỷ lệ dọc 6x9 (như ảnh điện thoại)
+            const geo = new THREE.PlaneGeometry(6, 9);
+            // Viền đỏ đậm (Dark Red)
+            const borderGeo = new THREE.PlaneGeometry(7, 10); 
+            const borderMat = new THREE.MeshBasicMaterial({ color: 0x8B0000 }); 
 
-    for(let i=0; i<5; i++) {
-        const mat = new THREE.MeshBasicMaterial({ 
-            map: photoTextures[i], side: THREE.DoubleSide 
-        });
-        const mesh = new THREE.Mesh(geo, mat);
-        const border = new THREE.Mesh(borderGeo, borderMat);
-        border.position.z = -0.1; 
-        mesh.add(border);
-        
-        mesh.visible = false;
-        mesh.scale.set(0,0,0);
-        scene.add(mesh);
-        photoMeshes.push(mesh);
-    }
-}
+            for(let i=0; i<5; i++) {
+                const mat = new THREE.MeshBasicMaterial({ 
+                    map: photoTextures[i], side: THREE.DoubleSide 
+                });
+                const mesh = new THREE.Mesh(geo, mat);
+                const border = new THREE.Mesh(borderGeo, borderMat);
+                border.position.z = -0.1; 
+                mesh.add(border);
+                
+                mesh.visible = false;
+                mesh.scale.set(0,0,0);
+                scene.add(mesh);
+                photoMeshes.push(mesh);
+            }
+        }
 
         function createDecorations() {
             const canvas = document.createElement('canvas');
@@ -330,29 +312,32 @@
             scene.add(starMesh);
         }
 
-  function updateParticleGroup(group, targetState, speed, handRotY, time, isBlinking) {
-    const positions = group.geometry.attributes.position.array;
-    const targetKey = (targetState === 'TREE') ? 'tree' : 'explode';
-    const targets = group.geometry.userData[(targetState === 'PHOTO') ? 'explode' : targetKey];
+        // --- HÀM CẬP NHẬT HẠT: ĐÃ SỬA ĐỂ TỰ XOAY ---
+        function updateParticleGroup(group, targetState, speed, handRotY, time, isBlinking) {
+            const positions = group.geometry.attributes.position.array;
+            const targetKey = (targetState === 'TREE') ? 'tree' : 'explode';
+            const targets = group.geometry.userData[(targetState === 'PHOTO') ? 'explode' : targetKey];
 
-    for(let i=0; i<positions.length; i++) {
-        positions[i] += (targets[i] - positions[i]) * speed;
-    }
-    group.geometry.attributes.position.needsUpdate = true;
+            for(let i=0; i<positions.length; i++) {
+                positions[i] += (targets[i] - positions[i]) * speed;
+            }
+            group.geometry.attributes.position.needsUpdate = true;
+            
+            // TỰ ĐỘNG XOAY VÒNG VÒNG (Bất kể trạng thái nào)
+            group.rotation.y += 0.004; 
 
-    group.rotation.y += 0.004;
-
-    if (targetState === 'TREE') {
-        if(isBlinking) {
-            const scale = 1 + Math.sin(time * 5) * 0.2;
-            group.scale.set(scale, scale, scale);
-        } else {
-            group.scale.set(1,1,1);
+            if (targetState === 'TREE') {
+                if(isBlinking) {
+                    const scale = 1 + Math.sin(time * 5) * 0.2;
+                    group.scale.set(scale, scale, scale);
+                } else {
+                    group.scale.set(1,1,1);
+                }
+            } else {
+                group.scale.set(1,1,1);
+                // Đã xóa dòng xoay theo tay
+            }
         }
-    } else {
-        group.scale.set(1,1,1);
-    }
-}
 
         function animate() {
             requestAnimationFrame(animate);
@@ -385,7 +370,8 @@
 
                 photoMeshes.forEach((mesh, i) => {
                     mesh.visible = true;
-                    const angle = baseAngle + i * angleStep;
+                    // Xoay theo groupGold để đồng bộ
+                    const angle = baseAngle + i * angleStep; 
                     const x = Math.sin(angle) * CONFIG.photoOrbitRadius;
                     const z = Math.cos(angle) * CONFIG.photoOrbitRadius;
                     const y = Math.sin(time + i) * 3; 
@@ -478,11 +464,11 @@
         });
         function logError(e) { document.getElementById('error-log').style.display='block'; document.getElementById('error-log').innerText+=e+"\n"; }
 
-        // --- CẬP NHẬT MỚI: Dùng biến state để hiện ảnh (Mượt hơn) ---
+        // Logic hiện ảnh ký ức mượt mà
         setInterval(() => {
             const memoryLane = document.getElementById('memoryLane');
             if (memoryLane) {
-                if (state === 'EXPLODE') { // Kiểm tra trực tiếp trạng thái
+                if (state === 'EXPLODE') { 
                     memoryLane.classList.add('show');
                 } else {
                     memoryLane.classList.remove('show');
